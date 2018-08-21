@@ -1,6 +1,6 @@
 # LazyMapper
 
-Wraps a JSON object and lazily maps its attributes to rich domain objects using either a set of default mappers (for Ruby's built-in types), or custom mappers specified by the client.
+Wraps a Hash and lazily maps its attributes to rich domain objects using either a set of default mappers (for Ruby's built-in types), or custom mappers specified by the client.
 
 The mapped values are memoized.
 
