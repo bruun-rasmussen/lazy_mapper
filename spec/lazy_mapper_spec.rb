@@ -74,6 +74,36 @@ describe LazyMapper do
           expect(mapper).to have_received(:map).exactly(1).times.with('42')
         end
       end
+
+      context 'when the model has circular references' do
+
+        subject(:instance) { foo }
+
+        let(:foo) { klass_foo.from_json 'bar' => 'bar' }
+        let(:bar) { klass_bar.from_json 'foo' => 'foo' }
+        let(:foo_builder) { proc { foo } }
+        let(:bar_builder) { proc { bar } }
+
+        let(:klass_foo) {
+          b = bar_builder
+          Class.new LazyMapper do
+            one :bar, Object, map: b
+          end
+        }
+
+        let(:klass_bar) {
+          b = foo_builder
+          Class.new LazyMapper do
+            one :foo, Object, map: b
+          end
+        }
+
+        it 'avoids infinit recursion, when inspected' do
+          stub_const('Bar', klass_bar)
+          stub_const('Foo', klass_foo)
+          expect(foo.inspect).to eq('<Foo bar: <Bar foo: <Foo ... > > >')
+        end
+      end
     end
 
     describe 'the :from option' do

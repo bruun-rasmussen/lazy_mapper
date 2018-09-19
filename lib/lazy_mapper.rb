@@ -265,6 +265,9 @@ class LazyMapper
   end
 
   def inspect
+    @__under_inspection__ ||= 0
+    return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
+    @__under_inspection__ += 1
     attributes = self.class.attributes
     if self.class.superclass.respond_to? :attributes
       attributes = self.class.superclass.attributes.merge attributes
@@ -274,6 +277,9 @@ class LazyMapper
       memo[name] = value unless value.nil?
     }
     "<#{ self.class.name } #{ present_attributes.map {|k,v| k.to_s + ': ' + v.inspect }.join(', ') } >"
+    res = "<#{ self.class.name } #{ present_attributes.map {|k,v| k.to_s + ': ' + v.inspect }.join(', ') } >"
+    @__under_inspection__ -= 1
+    res
   end
 
   protected
