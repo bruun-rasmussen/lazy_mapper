@@ -5,7 +5,7 @@ require 'lazy_mapper'
 
 describe LazyMapper do
 
-  describe '.from_json' do
+  describe 'when constructed with .from_json' do
 
     subject(:instance) { klass.from_json json }
 
@@ -197,7 +197,7 @@ describe LazyMapper do
     end
   end
 
-  context 'construction' do
+  context 'when constructed with .new' do
 
     subject(:instance) { klass.new values }
     let(:values) { {} }
