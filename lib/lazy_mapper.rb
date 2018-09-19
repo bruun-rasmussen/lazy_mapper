@@ -293,10 +293,10 @@ class LazyMapper
   # to the corresponding name in the unmapped
   # JSON object.
   #
-  # Defaults to #camelize
+  # Defaults to CAMELIZE
   #
   def self.map_name(name)
-    camelize(name)
+    CAMELIZE[name]
   end
 
   private
@@ -344,10 +344,5 @@ class LazyMapper
   end
 
   SNAKE_CASE_PATTERN = /(_[a-z])/
-
-  # "foo_bar_baz" -> "fooBarBaz"
-  # "foo_bar?" -> "fooBar"
-  def self.camelize(name)
-    name.to_s.gsub(SNAKE_CASE_PATTERN) { |x| x[1].upcase }.gsub('?', '')
-  end
+  CAMELIZE = -> name { name.to_s.gsub(SNAKE_CASE_PATTERN) { |x| x[1].upcase }.gsub('?', '') }
 end
