@@ -122,29 +122,35 @@ class LazyMapper
 
   # = ::one
   #
-  # Defines an attribute
+  # Defines an attribute and creates a reader and a writer for it.
+  # The writer verifies the type of it's supplied value.
   #
   # == Arguments
   #
-  # +name+ - The name of the attribue
+  # +name+    - The name of the attribue
   #
-  # +type+ - The type of the attribute. If  the wrapped value is already of
-  #          that type, the mapper is bypassed.
+  # +type+    - The type of the attribute. If the wrapped value is already of
+  #             that type, the mapper is bypassed.
+  #             If the type is allowed be one of several, use an Array to
+  #             to specify which ones
   #
-  # +from:+ - Specifies the name of the wrapped value in the JSON object.
-  #           Defaults to camelCased version of +name+.
+  # +from:+    - Specifies the name of the wrapped value in the JSON object.
+  #              Defaults to camelCased version of +name+.
   #
-  # +map:+  - Specifies a custom mapper to apply to the wrapped value. Must be
-  #           a Callable. If unspecified, it defaults to the default mapper for the
-  #           specified +type+ or simply the identity mapper if no default mapper exists.
+  # +map:+     - Specifies a custom mapper to apply to the wrapped value. Must be
+  #              a Callable. If unspecified, it defaults to the default mapper for the
+  #              specified +type+ or simply the identity mapper if no default mapper exists.
   #
-  # +default:+ - The default value to use, if the wrapped value is not present
+  # +default:+  - The default value to use, if the wrapped value is not present
   #              in the wrapped JSON object.
+  #
+  # +allow_nil:+ - If true, allows the mapped value to be nil. Defaults to true.
   #
   # == Example
   #
   #    class Foo < LazyMapper
   #      one :boss, Person, from: "supervisor", map: ->(p) { Person.new(p) }
+  #      one :weapon, [BladedWeapon, Firearm], default: Sixshooter.new
   #      # ...
   #    end
   #
