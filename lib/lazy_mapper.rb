@@ -1,7 +1,6 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
 require 'time'
-require 'active_support/core_ext/class/attribute'
 
 ##
 # Wraps a JSON object and lazily maps its attributes to domain objects
@@ -49,10 +48,20 @@ class LazyMapper
     mappers[type] = mapper
   end
 
-  class_attribute :mappers
-  self.mappers = {}
+  def self.mappers
+    @mappers ||= DEFAULT_MAPPINGS
+  end
 
-  attr_reader :mappers
+  mappers
+
+  def self.inherited(klass)
+    klass.instance_variable_set IVAR[:mappers], self.mappers.dup
+  end
+
+
+  def mappers
+    @mappers ||= self.class.mappers
+  end
 
   IVAR = -> name {
     name_as_str = name.to_s
@@ -305,7 +314,7 @@ class LazyMapper
   attr_writer :mappers
 
   def mapping_for(name, type)
-    mappers[name] || mappers[type] || self.class.mappers[type] || DEFAULT_MAPPINGS[type]
+    mappers[name] || mappers[type] || self.class.mappers[type]
   end
 
   def default_value(type)
