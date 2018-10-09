@@ -163,8 +163,12 @@ describe LazyMapper do
         one :composite, type
       end
 
+      klass2 = Class.new(klass)
       instance = klass.from_json 'composite' => '123 456'
       expect(instance.composite).to eq type.new('123', '456')
+
+      instance2 = klass2.from_json 'composite' => '456 789'
+      expect(instance2.composite).to eq type.new('456', '789')
     end
 
     it 'supports injection of customer mappers during instantiation' do
