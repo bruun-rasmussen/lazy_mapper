@@ -155,7 +155,7 @@ describe LazyMapper do
       expect(instance.composite).to eq type.new('abc', 'cde')
     end
 
-    it 'supports adding default mappers to derived classes' do
+    it 'supports adding inheritable default mappers to derived classes' do
       type = Struct.new(:val1, :val2)
 
       klass = Class.new LazyMapper do
@@ -169,6 +169,19 @@ describe LazyMapper do
 
       instance2 = klass2.from_json 'composite' => '456 789'
       expect(instance2.composite).to eq type.new('456', '789')
+    end
+
+    it 'supports adding or overriding inheritable default values for types to derived classes' do
+      type = Struct.new(:val1, :val2)
+
+      klass = Class.new LazyMapper do
+        default_value_for type, type.new('321', '123')
+        one :composite, type
+      end
+
+      klass2 = Class.new(klass)
+      instance = klass2.from_json({})
+      expect(instance.composite).to eq type.new('321', '123')
     end
 
     it 'supports injection of customer mappers during instantiation' do

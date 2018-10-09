@@ -34,6 +34,15 @@ class LazyMapper
     URI        => URI.method(:parse)
   }.freeze
 
+  def self.default_value_for type, value
+    default_values[type] = value
+  end
+
+  def self.default_values
+    @default_values ||= DEFAULT_VALUES
+  end
+
+
   # Default values for primitive types
   DEFAULT_VALUES = {
     String     => '',
@@ -52,10 +61,9 @@ class LazyMapper
     @mappers ||= DEFAULT_MAPPINGS
   end
 
-  mappers
-
   def self.inherited(klass)
     klass.instance_variable_set IVAR[:mappers], self.mappers.dup
+    klass.instance_variable_set IVAR[:default_values], self.default_values.dup
   end
 
 
@@ -318,7 +326,7 @@ class LazyMapper
   end
 
   def default_value(type)
-    DEFAULT_VALUES.fetch(type) { nil }
+    self.class.default_values[type]
   end
 
   def mapped_value(name, unmapped_value, type, map: mapping_for(name, type), default: default_value(type))
