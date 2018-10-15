@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lazy_mapper'
-  spec.version       = '0.2.0'
+  spec.version       = '0.2.1'
   spec.summary       = "A lazy object mapper"
   spec.description   = "Wraps primitive data in a semantically rich model"
   spec.authors       = ["Adam Lett"]
