@@ -22,13 +22,13 @@ class LazyMapper
 
   # Default mappings for built-in types
   DEFAULT_MAPPINGS = {
-    Object     => ->(o) { o },
-    String     => ->(s) { s.to_s },
-    Integer    => ->(i) { i.to_i },
-    BigDecimal => ->(d) { d.to_d },
-    Float      => ->(f) { f.to_f },
-    Symbol     => ->(s) { s.to_sym },
-    Hash       => ->(h) { h.to_h },
+    Object     => :itself.to_proc,
+    String     => :to_s.to_proc,
+    Integer    => :to_i.to_proc,
+    BigDecimal => :to_d.to_proc,
+    Float      => :to_f.to_proc,
+    Symbol     => :to_sym.to_proc,
+    Hash       => :to_h.to_proc,
     Time       => Time.method(:iso8601),
     Date       => Date.method(:parse),
     URI        => URI.method(:parse)
