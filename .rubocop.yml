@@ -1,0 +1,124 @@
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+  # To make it possible to copy or click on URIs in the code, we allow lines
+  # containing a URI to be longer than Max.
+  AllowHeredoc: true
+  AllowURI: true
+  URISchemes:
+    - http
+    - https
+
+Metrics/MethodLength:
+  CountComments: false  # count full line comments?
+  Max: 15
+
+Metrics/ClassLength:
+  CountComments: false  # count full line comments?
+  Max: 150
+
+Metrics/ModuleLength:
+  CountComments: false  # count full line comments?
+  Max: 150
+
+Metrics/BlockLength:
+  CountComments: false  # count full line comments?
+  Max: 150 # Nothing wrong with e.g. big Structs
+
+Layout/SpaceInsideStringInterpolation:
+  EnforcedStyle: space
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: false
+
+Style/RedundantSelf:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Enabled: false
+
+Style/SignalException:
+  Enabled: false
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundBlockBody:
+  Description: "Keeps track of empty lines around block bodies."
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  Description: "Keeps track of empty lines around class bodies."
+  Enabled: false
+
+Layout/EmptyLinesAroundModuleBody:
+  Description: "Keeps track of empty lines around module bodies."
+  Enabled: false
+
+Layout/EmptyLinesAroundMethodBody:
+  Description: "Keeps track of empty lines around method bodies."
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Style/RaiseArgs:
+  Enabled: false
+
+Style/RegexpLiteral:
+  Enabled: false
+
+Layout/AlignHash:
+  EnforcedColonStyle: table
+  EnforcedHashRocketStyle: table
+
+Layout/AlignParameters:
+  EnforcedStyle: with_first_parameter
+
+Layout/IndentArray:
+  EnforcedStyle: consistent
+
+Layout/IndentHash:
+  EnforcedStyle: consistent
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+
+Style/MutableConstant:
+  Enabled: false
+
+Style/MethodDefParentheses:
+  Enabled: false
+  EnforcedStyle: require_no_parentheses_except_multiline
+
+Style/StabbyLambdaParentheses:
+  Enabled: false
+
+Layout/SpaceInLambdaLiteral:
+  Enabled: false
+
+Style/StructInheritance:
+  Enabled: false
+
+Naming/PredicateName:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+Rails/DynamicFindBy:
+  Enabled: false
+
+Style/RescueStandardError:
+  EnforcedStyle: implicit
