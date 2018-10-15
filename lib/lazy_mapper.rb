@@ -105,7 +105,6 @@ class LazyMapper
   #       ]
 
   def initialize(values = {})
-    @json = {}
     @mappers = {}
     values.each do |name, value|
       send(WRITER[name], value)
@@ -119,7 +118,7 @@ class LazyMapper
   #
   # == Arguments
   #
-  # +json+ - The unmapped data as a Hash(-like object). Must respond to #to_h.
+  # +unmapped_data+ - The unmapped data as a Hash(-like object). Must respond to #to_h.
   # Keys are assumed to be camelCased string
   #
   # +mappers:+ - Optional instance-level mappers.
@@ -128,7 +127,7 @@ class LazyMapper
   #
   # == Example
   #
-  #     Foo.from_json({
+  #     Foo.from({
   #       "xmlId" => 42,
   #       "createdAt" => "2015-07-29 14:07:35 +0200",
   #       "amount" => "$2.00",
@@ -141,13 +140,18 @@ class LazyMapper
   #         :amount => -> x { Money.new(x) },
   #         User    => User.method(:new) })
   #
-  def self.from_json json, mappers: {}
-    return nil if json.nil?
-    fail TypeError, "#{ json.inspect } is not a Hash" unless json.respond_to? :to_h
+  def self.from unmapped_data, mappers: {}
+    return nil if unmapped_data.nil?
+    fail TypeError, "#{ unmapped_data.inspect } is not a Hash" unless unmapped_data.respond_to? :to_h
     instance = new
-    instance.send :json=, json.to_h
+    instance.send :unmapped_data=, unmapped_data.to_h
     instance.send :mappers=, mappers
     instance
+  end
+
+  def self.from_json *args, &block
+    warn "#{ self }.from_json is deprecated. Use #{ self }.from instead."
+    from *args, &block
   end
 
   def self.attributes
@@ -196,7 +200,7 @@ class LazyMapper
     # Define reader
     define_method(name) {
       memoize(name, ivar) {
-        unmapped_value = json[from]
+        unmapped_value = unmapped_data[from]
         mapped_value(name, unmapped_value, type, **args)
       }
     }
@@ -274,7 +278,7 @@ class LazyMapper
     # Define getter
     define_method(name) {
       memoize(name) {
-        unmapped_value = json[from]
+        unmapped_value = unmapped_data[from]
         if unmapped_value.is_a? Array
           unmapped_value.map { |v| mapped_value(name, v, type, **args) }
         else
@@ -309,10 +313,6 @@ class LazyMapper
 
   protected
 
-  def json
-    @json ||= {}
-  end
-
   #
   # Defines how to map an attribute name
   # to the corresponding name in the unmapped
@@ -326,8 +326,12 @@ class LazyMapper
 
   private
 
-  attr_writer :json
+  attr_writer :unmapped_data
   attr_writer :mappers
+
+  def unmapped_data
+    @unmapped_data ||= {}
+  end
 
   def mapping_for(name, type)
     mappers[name] || mappers[type] || self.class.mappers[type]

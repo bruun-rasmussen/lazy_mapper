@@ -5,11 +5,11 @@ require 'lazy_mapper'
 
 describe LazyMapper do
 
-  describe 'when constructed with .from_json' do
+  describe 'when constructed from unmapped data' do
 
-    subject(:instance) { klass.from_json json }
+    subject(:instance) { klass.from unmapped_data }
 
-    let(:json) { nil }
+    let(:unmapped_data) { nil }
     let(:klass) {
       t = type
       m = map
@@ -29,7 +29,7 @@ describe LazyMapper do
     end
 
     context 'when invalid data is supplied' do
-      let(:json) { 'not a hash' }
+      let(:unmapped_data) { 'not a hash' }
 
       it 'fails with a TypeError' do
         expect { instance }.to raise_error(TypeError)
@@ -38,7 +38,7 @@ describe LazyMapper do
 
     context 'when valid data is supplied' do
 
-      let(:json) {
+      let(:unmapped_data) {
         {
           'createdAt' => '2015-07-27',
           'updatedAt' => ['2015-01-01', '2015-01-02'],
@@ -47,11 +47,11 @@ describe LazyMapper do
         }
       }
 
-      it 'maps JSON attributes to domain objects' do
+      it 'maps primitives to domain objects' do
         expect(instance.created_at).to eq(Date.new(2015, 7, 27))
       end
 
-      it 'maps arrays of JSON values to arrays of domain objects' do
+      it 'maps arrays of primitives to arrays of domain objects' do
         expect(instance.updated_at).to be_a(Array)
         expect(instance.updated_at.first).to be_a(Date)
         expect(instance).to be_blue
@@ -79,8 +79,8 @@ describe LazyMapper do
 
         subject(:instance) { foo }
 
-        let(:foo) { klass_foo.from_json 'bar' => 'bar' }
-        let(:bar) { klass_bar.from_json 'foo' => 'foo' }
+        let(:foo) { klass_foo.from 'bar' => 'bar' }
+        let(:bar) { klass_bar.from 'foo' => 'foo' }
         let(:foo_builder) { proc { foo } }
         let(:bar_builder) { proc { bar } }
 
@@ -116,9 +116,9 @@ describe LazyMapper do
         end
       }
 
-      let(:json) { { 'BAZ' => 999, 'hairy' => true } }
+      let(:unmapped_data) { { 'BAZ' => 999, 'hairy' => true } }
 
-      it 'specifies a different name in the JSON object for the attribute' do
+      it 'specifies the name of the attribute in the unmapped data' do
         expect(instance.baz).to eq(999)
       end
 
@@ -135,7 +135,7 @@ describe LazyMapper do
       }
 
       it 'fails with a TypeError when an attribute is accessed' do
-        instance = klass.from_json 'bar' => 42
+        instance = klass.from 'bar' => 42
         expect { instance.bar }.to raise_error(TypeError)
       end
     end
@@ -146,7 +146,7 @@ describe LazyMapper do
         one :composite, type
       end
 
-      instance = klass.from_json 'composite' => '123 456'
+      instance = klass.from 'composite' => '123 456'
       instance.add_mapper_for(type) { |unmapped_value| type.new(*unmapped_value.split(' ')) }
 
       expect(instance.composite).to eq type.new('123', '456')
@@ -164,10 +164,10 @@ describe LazyMapper do
       end
 
       klass2 = Class.new(klass)
-      instance = klass.from_json 'composite' => '123 456'
+      instance = klass.from 'composite' => '123 456'
       expect(instance.composite).to eq type.new('123', '456')
 
-      instance2 = klass2.from_json 'composite' => '456 789'
+      instance2 = klass2.from 'composite' => '456 789'
       expect(instance2.composite).to eq type.new('456', '789')
     end
 
@@ -180,7 +180,7 @@ describe LazyMapper do
       end
 
       klass2 = Class.new(klass)
-      instance = klass2.from_json({})
+      instance = klass2.from({})
       expect(instance.composite).to eq type.new('321', '123')
     end
 
@@ -191,7 +191,7 @@ describe LazyMapper do
         one :bar, type
       end
 
-      instance = klass.from_json({ 'foo' => '123 456', 'bar' => 'abc def' },
+      instance = klass.from({ 'foo' => '123 456', 'bar' => 'abc def' },
                                  mappers: {
                                    foo: ->(f) { type.new(*f.split(' ').reverse) },
                                    type => ->(t) { type.new(*t.split(' ')) }
@@ -207,7 +207,7 @@ describe LazyMapper do
         many :bars, String, map: ->(v) { return v }
       end
 
-      instance = klass.from_json 'foos' => 'abc', 'bars' => 'abc'
+      instance = klass.from 'foos' => 'abc', 'bars' => 'abc'
 
       expect(instance.foos).to eq %w[a b c]
       expect { instance.bars }.to raise_error(TypeError)
