@@ -3,11 +3,10 @@ require 'bigdecimal/util'
 require 'time'
 
 #
-# Wraps a JSON object and lazily maps its attributes to domain objects
-# using either a set of default mappers (for Ruby's built-in types), or
-# custom mappers specified by the client.
-#
-# The mapped values are memoized.
+# Wraps a Hash or Hash-like data structure of primitive values and lazily maps
+# its attributes to semantically rich domain objects using either a set of
+# default mappers (for Ruby's built-in value types), or custom mappers which
+# can be added either at the class level or at the instance level.
 #
 # Example:
 #     class Foo < LazyMapper
@@ -17,7 +16,6 @@ require 'time'
 #       many :users, User, map: ->(u) { User.new(u) }
 #     end
 #
-
 class LazyMapper
 
   #
