@@ -5,6 +5,7 @@ vendor/bundle
 bin/
 log/
 tmp/
+doc/
 .idea/
 Gemfile.lock
 *.gem
