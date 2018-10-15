@@ -13,6 +13,10 @@ Example:
       many :users, User, map: ->(u) { User.new(u) }
     end
 
+## Documentation
+
+See [RubyDoc](https://www.rubydoc.info/gems/lazy_mapper/LazyMapper)
+
 ## License
 
-See `LICENSE` file.
+See [LICENSE](./LICENSE) file.
