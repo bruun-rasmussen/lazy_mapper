@@ -10,8 +10,8 @@ group :test do
 end
 
 group :tools do
-  gem 'pry-byebug', platform: :mri
   gem 'pry', platform: :jruby
+  gem 'pry-byebug', platform: :mri
 
   unless ENV['TRAVIS']
     gem 'mutant', git: 'https://github.com/mbj/mutant'

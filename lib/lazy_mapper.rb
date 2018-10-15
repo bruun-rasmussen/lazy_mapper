@@ -75,21 +75,18 @@ class LazyMapper
     klass.instance_variable_set IVAR[:default_values], self.default_values.dup
   end
 
-
   def mappers
     @mappers ||= self.class.mappers
   end
 
-  IVAR = -> name {
+  IVAR = lambda { |name|
     name_as_str = name.to_s
-    if name_as_str[-1] == '?'
-      name_as_str = name_as_str[0...-1]
-    end
+    name_as_str = name_as_str[0...-1] if name_as_str[-1] == '?'
 
     ('@' + name_as_str).freeze
   }
 
-  WRITER = -> name { (name.to_s.gsub('?', '') + '=').to_sym }
+  WRITER = -> name { (name.to_s.delete('?') + '=').to_sym }
 
   #
   # Creates a new instance by giving a Hash of attribues.
@@ -301,15 +298,13 @@ class LazyMapper
     return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
     @__under_inspection__ += 1
     attributes = self.class.attributes
-    if self.class.superclass.respond_to? :attributes
-      attributes = self.class.superclass.attributes.merge attributes
-    end
-    present_attributes = attributes.keys.each_with_object({}) {|name, memo|
+    attributes = self.class.superclass.attributes.merge attributes if self.class.superclass.respond_to? :attributes
+    present_attributes = attributes.keys.each_with_object({}) { |name, memo|
       value = self.send name
       memo[name] = value unless value.nil?
     }
-    "<#{ self.class.name } #{ present_attributes.map {|k,v| k.to_s + ': ' + v.inspect }.join(', ') } >"
-    res = "<#{ self.class.name } #{ present_attributes.map {|k,v| k.to_s + ': ' + v.inspect }.join(', ') } >"
+    "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
+    res = "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
     @__under_inspection__ -= 1
     res
   end
@@ -369,12 +364,11 @@ class LazyMapper
     [ all_but_last.join(separator), last ].join conjunction
   end
 
-
   def memoize name, ivar = IVAR[name]
     send WRITER[name], yield unless instance_variable_defined?(ivar)
     instance_variable_get(ivar)
   end
 
   SNAKE_CASE_PATTERN = /(_[a-z])/ # :nodoc:
-  CAMELIZE = -> name { name.to_s.gsub(SNAKE_CASE_PATTERN) { |x| x[1].upcase }.gsub('?', '') }
+  CAMELIZE = -> name { name.to_s.gsub(SNAKE_CASE_PATTERN) { |x| x[1].upcase }.delete('?') }
 end
