@@ -226,7 +226,6 @@ class LazyMapper
 
   singleton_class.send(:alias_method, :has, :is)
 
-
   # = ::many
   #
   # Wraps a collection
