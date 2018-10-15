@@ -2,7 +2,7 @@ require 'bigdecimal'
 require 'bigdecimal/util'
 require 'time'
 
-##
+#
 # Wraps a JSON object and lazily maps its attributes to domain objects
 # using either a set of default mappers (for Ruby's built-in types), or
 # custom mappers specified by the client.
@@ -20,7 +20,9 @@ require 'time'
 
 class LazyMapper
 
+  #
   # Default mappings for built-in types
+  #
   DEFAULT_MAPPINGS = {
     Object     => :itself.to_proc,
     String     => :to_s.to_proc,
@@ -34,6 +36,9 @@ class LazyMapper
     URI        => URI.method(:parse)
   }.freeze
 
+  #
+  # Adds (or overrides) a default type for a given type
+  #
   def self.default_value_for type, value
     default_values[type] = value
   end
@@ -42,8 +47,9 @@ class LazyMapper
     @default_values ||= DEFAULT_VALUES
   end
 
-
-  # Default values for primitive types
+  #
+  # Default values for built-in value types
+  #
   DEFAULT_VALUES = {
     String     => '',
     Integer    => 0,
@@ -53,6 +59,9 @@ class LazyMapper
     Array      => []
   }.freeze
 
+  #
+  # Adds a mapper for a give type
+  #
   def self.mapper_for(type, mapper)
     mappers[type] = mapper
   end
@@ -82,9 +91,11 @@ class LazyMapper
 
   WRITER = -> name { (name.to_s.gsub('?', '') + '=').to_sym }
 
-  # = ::new
   #
-  # Create a new instance by giving a Hash of attribues.
+  # Creates a new instance by giving a Hash of attribues.
+  #
+  # Attribute values are type checked according to how they were defined.
+  # If a value has the wrong type, a `TypeError` is raised.
   #
   # == Example
   #
@@ -106,23 +117,34 @@ class LazyMapper
     end
   end
 
-  # = ::from_json
   #
   # Create a new instance by giving a Hash of unmapped attributes.
   #
   # The keys in the Hash are assumed to be camelCased strings.
   #
+  # == Arguments
+  #
+  # +json+ - The unmapped data as a Hash(-like object). Must respond to #to_h.
+  # Keys are assumed to be camelCased string
+  #
+  # +mappers:+ - Optional instance-level mappers.
+  # Keys can either be classes or symbols corresponding to named attributes.
+  #
+  #
   # == Example
   #
-  #     Foo.from_json "xmlId" => 42,
+  #     Foo.from_json({
+  #       "xmlId" => 42,
   #       "createdAt" => "2015-07-29 14:07:35 +0200",
   #       "amount" => "$2.00",
   #       "users" => [
   #         { "id" => 23, "name" => "Adam" },
   #         { "id" => 45, "name" => "Ole" },
   #         { "id" => 66, "name" => "Anders" },
-  #         { "id" => 91, "name" => "Kristoffer" }
-  #       ]
+  #         { "id" => 91, "name" => "Kristoffer" } ]},
+  #       mappers: {
+  #         :amount => -> x { Money.new(x) },
+  #         User    => User.method(:new) })
   #
   def self.from_json json, mappers: {}
     return nil if json.nil?
@@ -137,29 +159,24 @@ class LazyMapper
     @attributes ||= {}
   end
 
-  # = ::one
   #
   # Defines an attribute and creates a reader and a writer for it.
   # The writer verifies the type of it's supplied value.
   #
   # == Arguments
   #
-  # +name+    - The name of the attribue
+  # +name+ - The name of the attribue
   #
-  # +type+    - The type of the attribute. If the wrapped value is already of
-  #             that type, the mapper is bypassed.
-  #             If the type is allowed be one of several, use an Array to
-  #             to specify which ones
+  # +type+ - The type of the attribute. If the wrapped value is already of that type, the mapper is bypassed.
+  # If the type is allowed be one of several, use an Array to to specify which ones
   #
-  # +from:+    - Specifies the name of the wrapped value in the JSON object.
-  #              Defaults to camelCased version of +name+.
+  # +from:+ - Specifies the name of the wrapped value in the JSON object. Defaults to camelCased version of +name+.
   #
-  # +map:+     - Specifies a custom mapper to apply to the wrapped value. Must be
-  #              a Callable. If unspecified, it defaults to the default mapper for the
-  #              specified +type+ or simply the identity mapper if no default mapper exists.
+  # +map:+ - Specifies a custom mapper to apply to the wrapped value.
+  # If unspecified, it defaults to the default mapper for the specified +type+ or simply the identity mapper
+  # if no default mapper exists.
   #
-  # +default:+  - The default value to use, if the wrapped value is not present
-  #              in the wrapped JSON object.
+  # +default:+ - The default value to use, if the wrapped value is not present in the wrapped JSON object.
   #
   # +allow_nil:+ - If true, allows the mapped value to be nil. Defaults to true.
   #
@@ -192,11 +209,11 @@ class LazyMapper
     attributes[name] = type
   end
 
-  ##
+  #
   # Converts a value to true or false according to its truthyness
+  #
   TO_BOOL = -> b { !!b }
 
-  # = ::is
   #
   # Defines an boolean attribute
   #
@@ -205,13 +222,12 @@ class LazyMapper
   # +name+ - The name of the attribue
   #
   # +from:+ - Specifies the name of the wrapped value in the JSON object.
-  #           Defaults to camelCased version of +name+.
+  # Defaults to camelCased version of +name+.
   #
-  # +map:+  - Specifies a custom mapper to apply to the wrapped value. Must be
-  #           a Callable.
-  #           Defaults to TO_BOOL if unspecified.
+  # +map:+ - Specifies a custom mapper to apply to the wrapped value. Must be a Callable.
+  # Defaults to TO_BOOL if unspecified.
   #
-  # +default:+ - The default value to use if the value is missing. False, if unspecified
+  # +default:+ The default value to use if the value is missing. False, if unspecified
   #
   # == Example
   #
@@ -226,27 +242,24 @@ class LazyMapper
 
   singleton_class.send(:alias_method, :has, :is)
 
-  # = ::many
   #
-  # Wraps a collection
+  # Defines a collection attribute
   #
   # == Arguments
   #
-  # +name+ - The name of the attribue
+  # +name+ - The name of the attribute
   #
-  # +type+ - The type of the elemnts in the collection. If an element is
-  #          already of that type, the mapper is bypassed for that element.
+  # +type+ - The type of the elements in the collection.
   #
   # +from:+ - Specifies the name of the wrapped array in the JSON object.
-  #           Defaults to camelCased version of +name+.
+  # Defaults to camelCased version of +name+.
   #
-  # +map:+ - Specifies a custom mapper to apply to the elements in the wrapped
-  #          array. Must respond to +#call+. If unspecified, it defaults to the default
-  #          mapper for the specified +type+ or simply the identity mapper if no default
-  #          mapper exists.
+  # +map:+ - Specifies a custom mapper to apply to each elements in the wrapped collection.
+  # If unspecified, it defaults to the default mapper for the specified +type+ or simply the identity mapper
+  # if no default mapper exists.
   #
   # +default:+ - The default value to use, if the wrapped value is not present
-  #              in the wrapped JSON object.
+  # in the wrapped JSON object.
   #
   # == Example
   #
@@ -276,6 +289,9 @@ class LazyMapper
     }
   end
 
+  #
+  # Adds an instance-level type mapper
+  #
   def add_mapper_for(type, &block)
     mappers[type] = block
   end
@@ -304,7 +320,7 @@ class LazyMapper
     @json ||= {}
   end
 
-  ##
+  #
   # Defines how to map an attribute name
   # to the corresponding name in the unmapped
   # JSON object.
@@ -359,6 +375,6 @@ class LazyMapper
     instance_variable_get(ivar)
   end
 
-  SNAKE_CASE_PATTERN = /(_[a-z])/
+  SNAKE_CASE_PATTERN = /(_[a-z])/ # :nodoc:
   CAMELIZE = -> name { name.to_s.gsub(SNAKE_CASE_PATTERN) { |x| x[1].upcase }.gsub('?', '') }
 end
