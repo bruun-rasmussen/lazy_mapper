@@ -15,7 +15,7 @@ Example:
 
 ## Documentation
 
-See [RubyDoc](https://www.rubydoc.info/gems/lazy_mapper/LazyMapper)
+See [RubyDoc](https://www.rubydoc.info/gems/lazy_mapper/0.2.1)
 
 ## License
 
