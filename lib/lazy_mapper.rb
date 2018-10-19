@@ -305,7 +305,6 @@ class LazyMapper
     @__under_inspection__ ||= 0
     return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
     @__under_inspection__ += 1
-    attributes = self.class.attributes
     present_attributes = attributes.keys.each_with_object({}) { |name, memo|
       value = self.send name
       memo[name] = value unless value.nil?
@@ -344,6 +343,10 @@ class LazyMapper
 
   def default_value(type)
     self.class.default_values[type]
+  end
+
+  def attributes
+    self.class.attributes
   end
 
   def mapped_value(name, unmapped_value, type, map: mapping_for(name, type), default: default_value(type))
