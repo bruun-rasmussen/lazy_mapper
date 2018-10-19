@@ -77,7 +77,7 @@ class LazyMapper
     @mappers ||= self.class.mappers
   end
 
-  IVAR = lambda { |name|
+  IVAR = lambda { |name| # :nodoc:
     name_as_str = name.to_s
     name_as_str = name_as_str[0...-1] if name_as_str[-1] == '?'
 
@@ -90,7 +90,8 @@ class LazyMapper
   # Creates a new instance by giving a Hash of attribues.
   #
   # Attribute values are type checked according to how they were defined.
-  # If a value has the wrong type, a `TypeError` is raised.
+  #
+  # Fails with +TypeError+, if a value doesn't have the expected type.
   #
   # == Example
   #
@@ -209,7 +210,7 @@ class LazyMapper
   end
 
   #
-  # Converts a value to true or false according to its truthyness
+  # Converts a value to +true+ or +false+ according to its truthyness
   #
   TO_BOOL = -> b { !!b }
 
@@ -250,15 +251,14 @@ class LazyMapper
   #
   # +type+ - The type of the elements in the collection.
   #
-  # +from:+ - Specifies the name of the wrapped array in the JSON object.
+  # +from:+ - Specifies the name of the wrapped array in the unmapped data.
   # Defaults to camelCased version of +name+.
   #
   # +map:+ - Specifies a custom mapper to apply to each elements in the wrapped collection.
   # If unspecified, it defaults to the default mapper for the specified +type+ or simply the identity mapper
   # if no default mapper exists.
   #
-  # +default:+ - The default value to use, if the wrapped value is not present
-  # in the wrapped JSON object.
+  # +default:+ - The default value to use, if the unmapped value is missing.
   #
   # == Example
   #
