@@ -286,6 +286,19 @@ describe LazyMapper do
         expect(instance2.tags).to be_empty
         expect(instance2.things).to_not be_empty
       end
+
+      it 'still includes every attribute when converted to Hash' do
+        expect(instance.to_h).to eq(
+          title: '',
+          count: 0,
+          rate: 0.0,
+          tags: [],
+          widget: nil,
+          things: ['something'],
+          green?: false,
+          flowers?: false
+        )
+      end
     end
   end
 end

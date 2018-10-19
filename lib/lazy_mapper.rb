@@ -301,6 +301,12 @@ class LazyMapper
     mappers[type] = block
   end
 
+  def to_h
+    attributes.each_with_object({}) {|(key, _value), h|
+      h[key] = self.send key
+    }
+  end
+
   def inspect
     @__under_inspection__ ||= 0
     return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
