@@ -9,7 +9,14 @@ describe LazyMapper do
 
     subject(:instance) { klass.from unmapped_data }
 
-    let(:unmapped_data) { nil }
+    let(:unmapped_data) {
+      {
+        'createdAt' => '2015-07-27',
+        'updatedAt' => ['2015-01-01', '2015-01-02'],
+        'foo'       => '42',
+        'blue'      => true
+      }
+    }
     let(:klass) {
       t = type
       m = map
@@ -25,6 +32,8 @@ describe LazyMapper do
     let(:type) { Integer }
 
     context 'if the supplied data is nil' do
+      let(:unmapped_data) { nil }
+
       it { is_expected.to be_nil }
     end
 
@@ -37,15 +46,6 @@ describe LazyMapper do
     end
 
     context 'when valid data is supplied' do
-
-      let(:unmapped_data) {
-        {
-          'createdAt' => '2015-07-27',
-          'updatedAt' => ['2015-01-01', '2015-01-02'],
-          'foo'       => '42',
-          'blue'      => true
-        }
-      }
 
       it 'maps primitives to domain objects' do
         expect(instance.created_at).to eq(Date.new(2015, 7, 27))
@@ -155,35 +155,6 @@ describe LazyMapper do
       expect(instance.composite).to eq type.new('abc', 'cde')
     end
 
-    it 'supports adding inheritable default mappers to derived classes' do
-      type = Struct.new(:val1, :val2)
-
-      klass = Class.new LazyMapper do
-        mapper_for type, ->(unmapped_value) { type.new(*unmapped_value.split(' ')) }
-        one :composite, type
-      end
-
-      klass2 = Class.new(klass)
-      instance = klass.from 'composite' => '123 456'
-      expect(instance.composite).to eq type.new('123', '456')
-
-      instance2 = klass2.from 'composite' => '456 789'
-      expect(instance2.composite).to eq type.new('456', '789')
-    end
-
-    it 'supports adding or overriding inheritable default values for types to derived classes' do
-      type = Struct.new(:val1, :val2)
-
-      klass = Class.new LazyMapper do
-        default_value_for type, type.new('321', '123')
-        one :composite, type
-      end
-
-      klass2 = Class.new(klass)
-      instance = klass2.from({})
-      expect(instance.composite).to eq type.new('321', '123')
-    end
-
     it 'supports injection of customer mappers during instantiation' do
       type = Struct.new(:val1, :val2)
       klass = Class.new LazyMapper do
@@ -211,6 +182,32 @@ describe LazyMapper do
 
       expect(instance.foos).to eq %w[a b c]
       expect { instance.bars }.to raise_error(TypeError)
+    end
+
+    context 'when it is derived from another LazyMapper' do
+      let(:klass) { Class.new(base) }
+      let(:composite_type) { Struct.new(:val1, :val2) }
+      let(:base) {
+        type = composite_type
+        Class.new(LazyMapper) do
+          default_value_for type, type.new('321', '123')
+          mapper_for type, ->(unmapped_value) { type.new(*unmapped_value.split(' ')) }
+          one :composite, type
+        end
+      }
+
+      it 'inherits attributes' do
+        expect(klass.attributes.keys).to eq [:composite]
+        expect(instance).to respond_to(:composite)
+      end
+
+      it 'inherits default values' do
+        expect(instance.composite).to eq composite_type.new('321', '123')
+      end
+
+      it 'inherits default mappers' do
+        expect(klass.from('composite' => 'abc def').composite).to eq composite_type.new('abc', 'def')
+      end
     end
   end
 

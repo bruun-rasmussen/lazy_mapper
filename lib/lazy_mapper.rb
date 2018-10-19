@@ -68,9 +68,19 @@ class LazyMapper
     @mappers ||= DEFAULT_MAPPINGS
   end
 
+  def self.attributes
+    @attributes ||= {}
+  end
+
   def self.inherited(klass)
-    klass.instance_variable_set IVAR[:mappers], self.mappers.dup
-    klass.instance_variable_set IVAR[:default_values], self.default_values.dup
+    # Make the subclass "inherit" the values of these class instance variables
+    %i[
+      mappers
+      default_values
+      attributes
+    ].each do |s|
+      klass.instance_variable_set IVAR[s], self.send(s).dup
+    end
   end
 
   def mappers
@@ -153,10 +163,6 @@ class LazyMapper
   def self.from_json *args, &block
     warn "#{ self }.from_json is deprecated. Use #{ self }.from instead."
     from *args, &block
-  end
-
-  def self.attributes
-    @attributes ||= {}
   end
 
   #
@@ -300,7 +306,6 @@ class LazyMapper
     return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
     @__under_inspection__ += 1
     attributes = self.class.attributes
-    attributes = self.class.superclass.attributes.merge attributes if self.class.superclass.respond_to? :attributes
     present_attributes = attributes.keys.each_with_object({}) { |name, memo|
       value = self.send name
       memo[name] = value unless value.nil?
