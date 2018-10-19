@@ -72,7 +72,7 @@ class LazyMapper
     @attributes ||= {}
   end
 
-  def self.inherited(klass)
+  def self.inherited klass # :nodoc:
     # Make the subclass "inherit" the values of these class instance variables
     %i[
       mappers
@@ -160,7 +160,7 @@ class LazyMapper
     instance
   end
 
-  def self.from_json *args, &block
+  def self.from_json *args, &block # :nodoc:
     warn "#{ self }.from_json is deprecated. Use #{ self }.from instead."
     from *args, &block
   end
