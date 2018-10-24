@@ -292,6 +292,8 @@ class LazyMapper
         end
       }
     }
+
+    attributes[name] = Array
   end
 
   #

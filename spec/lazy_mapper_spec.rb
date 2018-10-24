@@ -226,6 +226,7 @@ describe LazyMapper do
         one :things, Array, default: ['something']
         is  :green?
         has :flowers?
+        many :cars, Object
       end
     }
 
@@ -296,7 +297,8 @@ describe LazyMapper do
           widget: nil,
           things: ['something'],
           green?: false,
-          flowers?: false
+          flowers?: false,
+          cars: []
         )
       end
     end
