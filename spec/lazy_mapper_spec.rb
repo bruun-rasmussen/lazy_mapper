@@ -64,6 +64,12 @@ describe LazyMapper do
         expect(mapper).to have_received(:map).exactly(1).times.with('42')
       end
 
+      it 'only shows already mapped values, when inspected' do
+        stub_const 'MyModel', klass
+        instance.created_at
+        expect(instance.inspect).to eq '<MyModel created_at: #<Date: 2015-07-27 ((2457231j,0s,0n),+0s,2299161j)> >'
+      end
+
       context 'if the mapped value is nil' do
         let(:map) { -> x { mapper.map(x); nil } }
 
@@ -101,6 +107,7 @@ describe LazyMapper do
         it 'avoids infinit recursion, when inspected' do
           stub_const('Bar', klass_bar)
           stub_const('Foo', klass_foo)
+          foo.bar.foo
           expect(foo.inspect).to eq('<Foo bar: <Bar foo: <Foo ... > > >')
         end
       end

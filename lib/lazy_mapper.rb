@@ -314,8 +314,10 @@ class LazyMapper
     return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
     @__under_inspection__ += 1
     present_attributes = attributes.keys.each_with_object({}) { |name, memo|
-      value = self.send name
-      memo[name] = value unless value.nil?
+      ivar = IVAR[name]
+      if self.instance_variable_defined? ivar
+        memo[name] = self.instance_variable_get ivar
+      end
     }
     "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
     res = "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
