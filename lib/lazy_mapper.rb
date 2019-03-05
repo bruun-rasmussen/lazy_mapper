@@ -366,8 +366,10 @@ class LazyMapper
       fail ArgumentError, "missing mapper for #{ name } (#{ type }). "\
         "Unmapped value: #{ unmapped_value.inspect }"
     end
-    result = map.arity > 1 ? map.call(unmapped_value, self) : map.call(unmapped_value)
-    result
+
+    return map.call(unmapped_value, self) if map.arity > 1
+
+    map.call(unmapped_value)
   end
 
   def check_type! value, type, allow_nil:
