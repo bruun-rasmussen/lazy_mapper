@@ -375,7 +375,11 @@ class LazyMapper
 
   def check_type! value, type, allow_nil:
     permitted_types = allow_nil ? Array(type) + [ NilClass ] : Array(type)
-    fail TypeError.new "#{ self.class.name }: #{ value.inspect } is a #{ value.class } but was supposed to be a #{ humanize_list permitted_types, conjunction: ' or ' }" unless permitted_types.any? value.method(:is_a?)
+    return if permitted_types.any? value.method(:is_a?)
+
+    fail TypeError.new "#{ self.class.name }: "\
+      "#{ value.inspect } is a #{ value.class } "\
+      "but was supposed to be a #{ humanize_list permitted_types, conjunction: ' or ' }"
   end
 
   # [1,2,3] -> "1, 2 and 3"
