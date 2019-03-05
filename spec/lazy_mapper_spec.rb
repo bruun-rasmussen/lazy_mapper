@@ -170,10 +170,10 @@ describe LazyMapper do
       end
 
       instance = klass.from({ 'foo' => '123 456', 'bar' => 'abc def' },
-                                 mappers: {
-                                   foo: ->(f) { type.new(*f.split(' ').reverse) },
-                                   type => ->(t) { type.new(*t.split(' ')) }
-                                 })
+                            mappers: {
+                              foo: ->(f) { type.new(*f.split(' ').reverse) },
+                              type => ->(t) { type.new(*t.split(' ')) }
+                            })
 
       expect(instance.foo).to eq type.new('456', '123')
       expect(instance.bar).to eq type.new('abc', 'def')
@@ -297,15 +297,15 @@ describe LazyMapper do
 
       it 'still includes every attribute when converted to Hash' do
         expect(instance.to_h).to eq(
-          title: '',
-          count: 0,
-          rate: 0.0,
-          tags: [],
-          widget: nil,
-          things: ['something'],
-          green?: false,
+          title:    '',
+          count:    0,
+          rate:     0.0,
+          tags:     [],
+          widget:   nil,
+          things:   ['something'],
+          green?:   false,
           flowers?: false,
-          cars: []
+          cars:     []
         )
       end
     end

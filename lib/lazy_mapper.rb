@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bigdecimal'
 require 'bigdecimal/util'
 require 'time'
@@ -154,6 +156,7 @@ class LazyMapper
   def self.from unmapped_data, mappers: {}
     return nil if unmapped_data.nil?
     fail TypeError, "#{ unmapped_data.inspect } is not a Hash" unless unmapped_data.respond_to? :to_h
+
     instance = new
     instance.send :unmapped_data=, unmapped_data.to_h
     instance.send :mappers=, mappers
@@ -312,6 +315,7 @@ class LazyMapper
   def inspect
     @__under_inspection__ ||= 0
     return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
+
     @__under_inspection__ += 1
     present_attributes = attributes.keys.each_with_object({}) { |name, memo|
       ivar = IVAR[name]
@@ -363,6 +367,7 @@ class LazyMapper
       default.dup
     else
       fail ArgumentError, "missing mapper for #{ name } (#{ type }). Unmapped value: #{ unmapped_value.inspect }" if map.nil?
+
       result = map.arity > 1 ? map.call(unmapped_value, self) : map.call(unmapped_value)
       result
     end
@@ -379,6 +384,7 @@ class LazyMapper
   def humanize_list list, separator: ', ', conjunction: ' and '
     *all_but_last, last = list
     return last if all_but_last.empty?
+
     [ all_but_last.join(separator), last ].join conjunction
   end
 
