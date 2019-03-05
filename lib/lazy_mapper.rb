@@ -327,8 +327,6 @@ class LazyMapper
     res
   end
 
-  protected
-
   #
   # Defines how to map an attribute name
   # to the corresponding name in the unmapped
