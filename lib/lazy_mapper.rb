@@ -314,7 +314,7 @@ class LazyMapper
 
   def inspect
     @__under_inspection__ ||= 0
-    return "<#{ self.class.name } ... >" if @__under_inspection__ > 0
+    return "<#{ self.class.name } ... >" if @__under_inspection__.positive?
 
     @__under_inspection__ += 1
     present_attributes = attributes.keys.each_with_object({}) { |name, memo|
