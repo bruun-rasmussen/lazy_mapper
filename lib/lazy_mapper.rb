@@ -165,7 +165,7 @@ class LazyMapper
 
   def self.from_json *args, &block # :nodoc:
     warn "#{ self }.from_json is deprecated. Use #{ self }.from instead."
-    from *args, &block
+    from(*args, &block)
   end
 
   #
