@@ -319,7 +319,9 @@ class LazyMapper
     @__under_inspection__ += 1
     present_attributes = attributes.keys.each_with_object({}) { |name, memo|
       ivar = IVAR[name]
-      memo[name] = self.instance_variable_get ivar if self.instance_variable_defined? ivar
+      next unless self.instance_variable_defined? ivar
+
+      memo[name] = self.instance_variable_get ivar
     }
     "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
     res = "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
