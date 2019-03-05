@@ -323,7 +323,7 @@ class LazyMapper
 
       memo[name] = self.instance_variable_get ivar
     }
-    "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
+
     res = "<#{ self.class.name } #{ present_attributes.map { |k, v| k.to_s + ': ' + v.inspect }.join(', ') } >"
     @__under_inspection__ -= 1
     res
