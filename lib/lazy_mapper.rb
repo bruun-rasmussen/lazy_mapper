@@ -364,8 +364,10 @@ class LazyMapper
       # Duplicate to prevent accidental sharing between instances
       default.dup
     else
-      fail ArgumentError, "missing mapper for #{ name } (#{ type }). Unmapped value: #{ unmapped_value.inspect }" if map.nil?
-
+      if map.nil?
+        fail ArgumentError, "missing mapper for #{ name } (#{ type }). "\
+          "Unmapped value: #{ unmapped_value.inspect }"
+      end
       result = map.arity > 1 ? map.call(unmapped_value, self) : map.call(unmapped_value)
       result
     end
