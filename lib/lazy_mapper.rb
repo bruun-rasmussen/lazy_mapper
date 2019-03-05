@@ -360,17 +360,14 @@ class LazyMapper
   end
 
   def mapped_value(name, unmapped_value, type, map: mapping_for(name, type), default: default_value(type))
-    if unmapped_value.nil?
-      # Duplicate to prevent accidental sharing between instances
-      default.dup
-    else
-      if map.nil?
-        fail ArgumentError, "missing mapper for #{ name } (#{ type }). "\
-          "Unmapped value: #{ unmapped_value.inspect }"
-      end
-      result = map.arity > 1 ? map.call(unmapped_value, self) : map.call(unmapped_value)
-      result
+    return default.dup if unmapped_value.nil? # Duplicate to prevent accidental sharing between instances
+
+    if map.nil?
+      fail ArgumentError, "missing mapper for #{ name } (#{ type }). "\
+        "Unmapped value: #{ unmapped_value.inspect }"
     end
+    result = map.arity > 1 ? map.call(unmapped_value, self) : map.call(unmapped_value)
+    result
   end
 
   def check_type! value, type, allow_nil:
