@@ -53,7 +53,7 @@ class LazyMapper
     Integer    => 0,
     Numeric    => 0,
     Float      => 0.0,
-    BigDecimal => BigDecimal.new('0'),
+    BigDecimal => BigDecimal(0),
     Array      => []
   }.freeze
 
