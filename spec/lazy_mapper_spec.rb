@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'lazy_mapper'
 
-describe LazyMapper do
+describe LazyMapper::Model do
 
   describe 'when constructed from unmapped data' do
 
@@ -20,7 +20,7 @@ describe LazyMapper do
     let(:klass) {
       t = type
       m = map
-      Class.new LazyMapper do
+      Class.new described_class do
         one :created_at, Date
         many :updated_at, Date
         one :foo, t, map: m, default: 666
@@ -92,14 +92,14 @@ describe LazyMapper do
 
         let(:klass_foo) {
           b = bar_builder
-          Class.new LazyMapper do
+          Class.new described_class do
             one :bar, Object, map: b
           end
         }
 
         let(:klass_bar) {
           b = foo_builder
-          Class.new LazyMapper do
+          Class.new described_class do
             one :foo, Object, map: b
           end
         }
@@ -116,7 +116,7 @@ describe LazyMapper do
     describe 'the :from option' do
 
       let(:klass) {
-        Class.new LazyMapper do
+        Class.new described_class do
           one :baz, Integer, from: 'BAZ'
           is :fuzzy?, from: 'hairy'
           is :sweet?, from: 'sugary'
@@ -136,7 +136,7 @@ describe LazyMapper do
     context "if the mapper doesn't map to the correct type" do
 
       let(:klass) {
-        Class.new LazyMapper do
+        Class.new described_class do
           one :bar, Float, map: ->(x) { x.to_s }
         end
       }
@@ -149,7 +149,7 @@ describe LazyMapper do
 
     it 'supports adding custom type mappers to instances' do
       type = Struct.new(:val1, :val2)
-      klass = Class.new LazyMapper do
+      klass = Class.new described_class do
         one :composite, type
       end
 
@@ -164,7 +164,7 @@ describe LazyMapper do
 
     it 'supports injection of customer mappers during instantiation' do
       type = Struct.new(:val1, :val2)
-      klass = Class.new LazyMapper do
+      klass = Class.new described_class do
         one :foo, type
         one :bar, type
       end
@@ -180,7 +180,7 @@ describe LazyMapper do
     end
 
     it 'expects the supplied mapper to return an Array if the unmapped value of a "many" attribute is not an array' do
-      klass = Class.new LazyMapper do
+      klass = Class.new described_class do
         many :foos, String, map: ->(v) { return v.split '' }
         many :bars, String, map: ->(v) { return v }
       end
@@ -196,7 +196,7 @@ describe LazyMapper do
       let(:composite_type) { Struct.new(:val1, :val2) }
       let(:base) {
         type = composite_type
-        Class.new(LazyMapper) do
+        Class.new(described_class) do
           default_value_for type, type.new('321', '123')
           mapper_for type, ->(unmapped_value) { type.new(*unmapped_value.split(' ')) }
           one :composite, type
@@ -224,7 +224,7 @@ describe LazyMapper do
     let(:values) { {} }
 
     let(:klass) {
-      Class.new LazyMapper do
+      Class.new described_class do
         one :title, String
         one :count, Integer
         one :rate, Float

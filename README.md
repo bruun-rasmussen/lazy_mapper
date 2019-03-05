@@ -6,7 +6,7 @@ The mapped values are memoized.
 
 Example:
 
-    class Foo < LazyMapper
+    class Foo < LazyMapper::Model
       one :id, Integer, from: 'iden'
       one :created_at, Time
       one :amount, Money, map: Money.method(:parse)
