@@ -271,6 +271,12 @@ module LazyMapper
       mappers[type] = block
     end
 
+    #
+    # Returns a +Hash+ with keys corresponding to attribute names, and values
+    # corresponding to *mapped* attribute values.
+    #
+    # Note: This will eagerly map all attributes that haven't yet been mapped
+    #
     def to_h
       attributes.each_with_object({}) { |(key, _value), h|
         h[key] = self.send key
