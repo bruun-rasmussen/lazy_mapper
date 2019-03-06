@@ -133,11 +133,6 @@ module LazyMapper
       instance
     end
 
-    def self.from_json *args, &block # :nodoc:
-      warn "#{ self }.from_json is deprecated. Use #{ self }.from instead."
-      from(*args, &block)
-    end
-
     #
     # Defines an attribute and creates a reader and a writer for it.
     # The writer verifies the type of it's supplied value.
