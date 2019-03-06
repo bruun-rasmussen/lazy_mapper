@@ -388,8 +388,8 @@ module LazyMapper
     # [1,2,3] -> "1, 2 and 3"
     # [1, 2]  -> "1 and 2"
     # [1]     -> "1"
-    def humanize_list list, separator: ', ', conjunction: ' and '
-      *all_but_last, last = list
+    def humanize_list terms, separator: ', ', conjunction: ' and '
+      *all_but_last, last = terms
       return last if all_but_last.empty?
 
       [ all_but_last.join(separator), last ].join conjunction
