@@ -3,5 +3,6 @@
 module LazyMapper
 end
 
+require 'lazy_mapper/version'
 require 'lazy_mapper/defaults'
 require 'lazy_mapper/model'

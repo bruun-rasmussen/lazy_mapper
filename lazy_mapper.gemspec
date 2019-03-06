@@ -1,6 +1,11 @@
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'lazy_mapper/version'
+
 Gem::Specification.new do |spec|
   spec.name          = 'lazy_mapper'
-  spec.version       = '0.3.2'
+  spec.version       = LazyMapper::VERSION
   spec.summary       = 'A lazy object mapper'
   spec.description   = 'Wraps primitive data in a semantically rich model'
   spec.authors       = ['Adam Lett']
