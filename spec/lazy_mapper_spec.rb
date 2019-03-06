@@ -270,7 +270,7 @@ describe LazyMapper::Model do
 
     context 'when no values are provided' do
 
-      it 'have sensible fallback values for primitive types' do
+      it 'has sensible default values for primitive types' do
         expect(instance.title).to eq('')
         expect(instance.count).to eq(0)
         expect(instance.rate).to eq(0.0)
@@ -278,15 +278,15 @@ describe LazyMapper::Model do
         expect(instance.tags).to eq []
       end
 
-      it 'use the supplied default values' do
+      it 'uses the supplied default values' do
         expect(instance.things).to eq(['something'])
       end
 
-      it 'fall back to nil in all other cases' do
+      it 'falls back to nil in all other cases' do
         expect(instance.widget).to be_nil
       end
 
-      it 'don\'t share their default values between instances' do
+      it 'dosn\'t share its default values with other instances' do
         instance1 = klass.new
         instance2 = klass.new
         instance1.tags << 'dirty'
