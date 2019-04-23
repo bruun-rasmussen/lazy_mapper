@@ -194,6 +194,8 @@ describe LazyMapper::Model do
     context 'when it is derived from another LazyMapper' do
       let(:klass) { Class.new(base) }
       let(:composite_type) { Struct.new(:val1, :val2) }
+      let(:new_type) { Class.new }
+      let(:new_type_mapper) { new_type.method(:new) }
       let(:base) {
         type = composite_type
         Class.new(described_class) do
@@ -214,6 +216,13 @@ describe LazyMapper::Model do
 
       it 'inherits default mappers' do
         expect(klass.from('composite' => 'abc def').composite).to eq composite_type.new('abc', 'def')
+      end
+
+      it 'inherits default mappers that are added to its parent after it has been defined', wip: true do
+        expect(klass.mappers[new_type]).to be_nil
+        base.mapper_for new_type, new_type_mapper
+        expect(base.mappers[new_type]).to eq new_type_mapper
+        expect(klass.mappers[new_type]).to eq new_type_mapper
       end
     end
   end

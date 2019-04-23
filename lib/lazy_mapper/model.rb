@@ -47,12 +47,14 @@ module LazyMapper
     def self.inherited klass # :nodoc:
       # Make the subclass "inherit" the values of these class instance variables
       %i[
-        mappers
         default_values
         attributes
       ].each do |s|
         klass.instance_variable_set IVAR[s], self.send(s).dup
       end
+
+      # If a mapper is does not exist in the derived class, look it up in this class
+      klass.instance_variable_set('@mappers', Hash.new { |_mappers, type| mappers[type] })
     end
 
     def mappers
