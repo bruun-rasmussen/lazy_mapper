@@ -2,8 +2,8 @@
 
 ## Changed
 
-* Renamed `LazyMapper` class to `LazyMapper::Model`
 * Removed deprecated factory method `.from_json`
+* Enable inheritance of mappers added after the derived class is defined
 
 #0.3.2
 
