@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'lazy_mapper'
 
-describe LazyMapper::Model do
+describe LazyMapper do
 
   describe 'when constructed from unmapped data' do
 

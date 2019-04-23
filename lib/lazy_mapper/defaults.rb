@@ -4,7 +4,7 @@ require 'bigdecimal'
 require 'bigdecimal/util'
 require 'time'
 
-module LazyMapper
+class LazyMapper
   #
   # Default mappings for built-in types
   #
