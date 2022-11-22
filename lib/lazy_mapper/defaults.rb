@@ -3,6 +3,7 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
 require 'time'
+require 'uri'
 
 class LazyMapper
   #
